@@ -129,7 +129,7 @@ public class BonsaiController: UIPresentationController, BonsaiTransitionPropert
     }
     
     override public var frameOfPresentedViewInContainerView: CGRect {
-        return (sizeDelegate ?? self).frameOfPresentedView(in: containerView?.frame ?? CGRectZero)
+        return (sizeDelegate ?? self).frameOfPresentedView(in: containerView?.frame ?? CGRect.zero)
     }
     
     override public func dismissalTransitionWillBegin() {
@@ -144,7 +144,7 @@ public class BonsaiController: UIPresentationController, BonsaiTransitionPropert
     override public func presentationTransitionWillBegin() {
         
         blurEffectView.alpha = 0
-        blurEffectView.frame = containerView?.bounds ?? CGRectZero
+        blurEffectView.frame = containerView?.bounds ?? CGRect.zero
         containerView?.addSubview(blurEffectView)
         
         presentedView?.frame = frameOfPresentedViewInContainerView

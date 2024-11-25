@@ -20,6 +20,8 @@ public protocol BonsaiControllerDelegate: UIViewControllerTransitioningDelegate 
     //@objc(presentationControllerForPresentedViewController:presentingViewController:sourceViewController:)
     //func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController?
     @objc optional func didDismiss()
+    
+    @objc optional func presentedViewFrameDidChange(_ presentedView: UIView?)
 }
 
 @objc
@@ -132,6 +134,13 @@ public class BonsaiController: UIPresentationController, BonsaiTransitionPropert
         return (sizeDelegate ?? self).frameOfPresentedView(in: containerView?.frame ?? CGRect.zero)
     }
     
+    private func notifyPresentedViewFrameDidChange() {
+        guard let presentedView = presentedView else {
+            return
+        }
+        sizeDelegate?.presentedViewFrameDidChange?(presentedView)
+    }
+    
     override public func dismissalTransitionWillBegin() {
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { [weak self] (UIViewControllerTransitionCoordinatorContext) in
             self?.blurEffectView.alpha = 0
@@ -148,6 +157,7 @@ public class BonsaiController: UIPresentationController, BonsaiTransitionPropert
         containerView?.addSubview(blurEffectView)
         
         presentedView?.frame = frameOfPresentedViewInContainerView
+        self.notifyPresentedViewFrameDidChange()
         
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { [weak self] (UIViewControllerTransitionCoordinatorContext) in
             self?.blurEffectView.alpha = 1
@@ -162,6 +172,7 @@ public class BonsaiController: UIPresentationController, BonsaiTransitionPropert
         coordinator.animate(alongsideTransition: { [weak self] (contx) in
             guard let self = self else { return }
             self.presentedView?.frame = self.frameOfPresentedViewInContainerView
+            self.notifyPresentedViewFrameDidChange()
             self.presentedView?.layoutIfNeeded()
         })
     }
